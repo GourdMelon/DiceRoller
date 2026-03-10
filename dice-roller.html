@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dice Roller">
+<title>Dice Roller</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0c0a;
+    --surface: #1a1612;
+    --surface2: #231f1a;
+    --surface3: #2d2720;
+    --gold: #c9922a;
+    --gold-light: #e8b84b;
+    --gold-dim: #7a5518;
+    --amber: #ff9f1c;
+    --red: #c0392b;
+    --red-light: #e74c3c;
+    --green: #27ae60;
+    --text: #f0e6d3;
+    --text-dim: #8a7860;
+    --text-muted: #4a3f30;
+    --border: #3a2e20;
+    --border-gold: rgba(201, 146, 42, 0.3);
+    --shadow-gold: 0 0 20px rgba(201, 146, 42, 0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%; width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(201,146,42,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(201,146,42,0.05) 0%, transparent 50%);
+  }
+
+  /* HEADER */
+  .header {
+    flex-shrink: 0;
+    padding: 16px 20px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--gold-light);
+    text-shadow: 0 0 20px rgba(232,184,75,0.4);
+  }
+
+  .total-display {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .total-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    font-family: 'Cinzel', serif;
+  }
+  .total-value {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold-light);
+    line-height: 1;
+    text-shadow: 0 0 15px rgba(232,184,75,0.5);
+    transition: all 0.2s;
+  }
+  .total-value.bump {
+    transform: scale(1.2);
+    color: var(--amber);
+  }
+
+  /* TABS */
+  .tabs {
+    flex-shrink: 0;
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 8px;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px 6px;
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .tab.active {
+    color: var(--gold-light);
+    border-bottom-color: var(--gold);
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    flex-direction: column;
+    padding: 16px;
+    gap: 14px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .panel.active { display: flex; }
+
+  /* DICE GRID */
+  .dice-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .die-btn {
+    position: relative;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    overflow: hidden;
+  }
+  .die-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201,146,42,0.08) 0%, transparent 60%);
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .die-btn:active {
+    transform: scale(0.93);
+    border-color: var(--gold);
+    box-shadow: var(--shadow-gold);
+  }
+  .die-btn:active::before { opacity: 1; }
+
+  .die-icon {
+    font-size: 28px;
+    line-height: 1;
+    transition: transform 0.15s;
+  }
+  .die-btn:active .die-icon { transform: rotate(15deg) scale(1.1); }
+
+  .die-label {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gold-light);
+    letter-spacing: 0.05em;
+  }
+  .die-last {
+    font-size: 11px;
+    color: var(--text-dim);
+    min-height: 14px;
+  }
+
+  /* ROLL LOG */
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .roll-log {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .roll-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.2s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .roll-item-icon { font-size: 20px; flex-shrink: 0; }
+  .roll-item-info { flex: 1; }
+  .roll-item-die {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.05em;
+  }
+  .roll-item-val {
+    font-size: 22px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .roll-item-val.crit { color: var(--amber); text-shadow: 0 0 10px rgba(255,159,28,0.5); }
+  .roll-item-val.fail { color: var(--red-light); }
+
+  .delete-btn {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .delete-btn:active { background: var(--red); border-color: var(--red); color: white; }
+
+  .empty-state {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 15px;
+  }
+
+  .clear-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    align-self: flex-end;
+  }
+  .clear-btn:active { border-color: var(--red); color: var(--red-light); }
+
+  /* UNTIL FAIL PANEL */
+  .card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .field-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .die-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .die-sel-btn {
+    padding: 8px 4px;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .die-sel-btn.selected {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold-light);
+  }
+
+  .limit-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .limit-label {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .limit-label span {
+    display: block;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .num-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .num-btn {
+    width: 32px; height: 32px;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--gold-light);
+    font-size: 18px;
+    font-family: 'Cinzel', serif;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .num-btn:active { background: var(--gold-dim); border-color: var(--gold); }
+  .num-val {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold-light);
+    min-width: 28px;
+    text-align: center;
+  }
+
+  .threshold-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .threshold-label {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .threshold-label span {
+    display: block;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .run-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--gold-dim) 0%, #5a3d0a 100%);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    color: var(--gold-light);
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-shadow: 0 0 10px rgba(232,184,75,0.3);
+    box-shadow: 0 4px 20px rgba(201,146,42,0.2);
+    user-select: none;
+  }
+  .run-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 0 30px rgba(201,146,42,0.4);
+  }
+  .run-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  /* ADVANTAGE TOGGLE */
+  .advantage-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .advantage-row.on {
+    border-color: var(--gold);
+    background: rgba(122, 85, 24, 0.25);
+  }
+  .advantage-label {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .advantage-label span {
+    display: block;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .toggle-wrap {
+    flex-shrink: 0;
+    position: relative;
+    width: 46px;
+    height: 26px;
+  }
+  .toggle-wrap input {
+    opacity: 0;
+    width: 0; height: 0;
+    position: absolute;
+  }
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .toggle-track::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px; height: 18px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+  .toggle-wrap input:checked + .toggle-track {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+  }
+  .toggle-wrap input:checked + .toggle-track::after {
+    left: calc(100% - 21px);
+    background: var(--gold-light);
+    box-shadow: 0 0 8px rgba(232,184,75,0.5);
+  }
+
+  .adv-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.08em;
+    padding: 2px 7px;
+    border-radius: 5px;
+    background: rgba(122,85,24,0.4);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold-light);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* RESULTS */
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border-gold);
+    border-radius: 14px;
+    padding: 18px;
+    animation: slideIn 0.25s ease;
+  }
+
+  .result-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-stat:last-child { border-bottom: none; }
+  .result-stat-label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .result-stat-val {
+    font-family: 'Cinzel', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gold-light);
+    text-shadow: 0 0 15px rgba(232,184,75,0.4);
+  }
+  .result-stat-val.big {
+    font-size: 36px;
+  }
+
+  .roll-seq {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .roll-seq-title {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .roll-seq-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .roll-chip {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .roll-chip.fail-chip {
+    background: rgba(192, 57, 43, 0.2);
+    border-color: var(--red);
+    color: var(--red-light);
+  }
+
+  .add-to-total-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    background: transparent;
+    border: 1px dashed var(--gold-dim);
+    border-radius: 10px;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.18s;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+  }
+  .add-to-total-btn:active {
+    background: var(--gold-dim);
+    border-style: solid;
+    border-color: var(--gold);
+    color: var(--gold-light);
+  }
+  .add-to-total-btn.added {
+    border-style: solid;
+    border-color: var(--green);
+    color: var(--green);
+    pointer-events: none;
+  }
+
+  .rolling-indicator {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+  }
+  .rolling-dots { animation: blink 1s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* Scrollbar */
+  .panel::-webkit-scrollbar { width: 3px; }
+  .panel::-webkit-scrollbar-track { background: transparent; }
+  .panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Flash animation for die last result */
+  @keyframes flashGold {
+    0% { color: var(--amber); }
+    100% { color: var(--text-dim); }
+  }
+  .die-last.flash { animation: flashGold 1.5s ease; }
+
+  .info-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.5;
+    padding: 2px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>DICE ROLLER</h1>
+  <div class="total-display">
+    <div class="total-label">Running Total</div>
+    <div class="total-value" id="grandTotal">0</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('roll')">Roll Dice</div>
+  <div class="tab" onclick="switchTab('log')">Roll Log</div>
+  <div class="tab" onclick="switchTab('until')">Until Fail</div>
+</div>
+
+<div class="main">
+
+  <!-- ROLL PANEL -->
+  <div class="panel active" id="panel-roll">
+    <div class="section-title">Choose a Die</div>
+    <div class="dice-grid" id="diceGrid"></div>
+  </div>
+
+  <!-- LOG PANEL -->
+  <div class="panel" id="panel-log">
+    <button class="clear-btn" onclick="clearAll()">CLEAR ALL</button>
+    <div class="section-title">Individual Rolls</div>
+    <div class="roll-log" id="rollLog">
+      <div class="empty-state">No rolls yet — head to Roll Dice!</div>
+    </div>
+  </div>
+
+  <!-- UNTIL FAIL PANEL -->
+  <div class="panel" id="panel-until">
+    <div class="card">
+      <span class="field-label">Select Die</span>
+      <div class="die-selector" id="dieSelector"></div>
+
+      <div class="limit-row">
+        <div class="limit-label">
+          Fail Limit
+          <span>Stop after rolling below threshold this many times</span>
+        </div>
+        <div class="num-control">
+          <button class="num-btn" onclick="changeLimit(-1)">−</button>
+          <div class="num-val" id="limitVal">4</div>
+          <button class="num-btn" onclick="changeLimit(1)">+</button>
+        </div>
+      </div>
+
+      <div class="threshold-row">
+        <div class="threshold-label">
+          Fail Threshold
+          <span>Roll is a "fail" if result is strictly less than this</span>
+        </div>
+        <div class="num-control">
+          <button class="num-btn" onclick="changeThreshold(-1)">−</button>
+          <div class="num-val" id="thresholdVal">6</div>
+          <button class="num-btn" onclick="changeThreshold(1)">+</button>
+        </div>
+      </div>
+
+      <div class="advantage-row" id="advRow">
+        <div class="advantage-label">
+          Roll with Advantage
+          <span>Each roll is made twice — only the higher result counts</span>
+        </div>
+        <label class="toggle-wrap">
+          <input type="checkbox" id="advantageToggle" onchange="toggleAdvantage()">
+          <div class="toggle-track"></div>
+        </label>
+      </div>
+
+      <button class="run-btn" id="runUntilBtn" onclick="runUntilFail()">
+        ROLL UNTIL FAIL
+      </button>
+    </div>
+
+    <div id="untilResult"></div>
+  </div>
+
+</div>
+
+<script>
+const DICE = [
+  { sides: 2,   icon: '⬡', label: 'd2' },
+  { sides: 3,   icon: '△',  label: 'd3' },
+  { sides: 4,   icon: '◇',  label: 'd4' },
+  { sides: 6,   icon: '⬡',  label: 'd6' },
+  { sides: 8,   icon: '◈',  label: 'd8' },
+  { sides: 10,  icon: '⬟', label: 'd10' },
+  { sides: 12,  icon: '⬠', label: 'd12' },
+  { sides: 20,  icon: '⬡', label: 'd20' },
+  { sides: 100, icon: '◉', label: 'd100' },
+];
+
+const DICE_ICONS = {};
+
+let rolls = [];        // { id, sides, value, timestamp }
+let rollIdCounter = 0;
+let untilDie = 6;
+let untilLimit = 4;
+let untilThreshold = 6;
+let untilAdvantage = false;
+
+function roll(sides) {
+  return Math.floor(Math.random() * sides) + 1;
+}
+
+function addRoll(sides) {
+  const value = roll(sides);
+  const id = ++rollIdCounter;
+  rolls.push({ id, sides, value, timestamp: Date.now() });
+  updateTotal(true);
+  renderLog();
+  // Update die button last result
+  const lastEl = document.getElementById(`last-${sides}`);
+  if (lastEl) {
+    lastEl.textContent = `→ ${value}`;
+    lastEl.className = 'die-last flash';
+    void lastEl.offsetWidth;
+    lastEl.className = 'die-last';
+  }
+  return value;
+}
+
+function deleteRoll(id) {
+  rolls = rolls.filter(r => r.id !== id);
+  updateTotal(false);
+  renderLog();
+}
+
+function clearAll() {
+  rolls = [];
+  updateTotal(false);
+  renderLog();
+  // Clear last results
+  DICE.forEach(d => {
+    const el = document.getElementById(`last-${d.sides}`);
+    if (el) el.textContent = '';
+  });
+}
+
+function getTotal() {
+  return rolls.reduce((sum, r) => sum + r.value, 0);
+}
+
+function updateTotal(bump) {
+  const el = document.getElementById('grandTotal');
+  el.textContent = getTotal();
+  if (bump) {
+    el.classList.add('bump');
+    setTimeout(() => el.classList.remove('bump'), 200);
+  }
+}
+
+function renderLog() {
+  const container = document.getElementById('rollLog');
+  if (rolls.length === 0) {
+    container.innerHTML = '<div class="empty-state">No rolls yet — head to Roll Dice!</div>';
+    return;
+  }
+  container.innerHTML = [...rolls].reverse().map(r => {
+    if (r.label) {
+      // Until Fail composite entry
+      return `<div class="roll-item" id="roll-${r.id}">
+        <div class="roll-item-info">
+          <div class="roll-item-die" style="font-size:10px;">${r.label}</div>
+          <div class="roll-item-val">${r.value}</div>
+        </div>
+        <button class="delete-btn" onclick="deleteRoll(${r.id})">✕</button>
+      </div>`;
+    }
+    const isCrit = r.value === r.sides;
+    const isFail = r.value === 1;
+    const valClass = isCrit ? 'roll-item-val crit' : isFail ? 'roll-item-val fail' : 'roll-item-val';
+    const note = isCrit ? ' ✦' : isFail ? ' ✕' : '';
+    return `<div class="roll-item" id="roll-${r.id}">
+      <div class="roll-item-info">
+        <div class="roll-item-die">d${r.sides}</div>
+        <div class="${valClass}">${r.value}${note}</div>
+      </div>
+      <button class="delete-btn" onclick="deleteRoll(${r.id})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function buildDiceGrid() {
+  const grid = document.getElementById('diceGrid');
+  grid.innerHTML = DICE.map(d => `
+    <button class="die-btn" onclick="addRoll(${d.sides})">
+      <div class="die-label">${d.label}</div>
+      <div class="die-last" id="last-${d.sides}"></div>
+    </button>
+  `).join('');
+}
+
+function buildDieSelector() {
+  const sel = document.getElementById('dieSelector');
+  sel.innerHTML = DICE.map(d => `
+    <button class="die-sel-btn ${d.sides === untilDie ? 'selected' : ''}"
+      onclick="selectUntilDie(${d.sides})">${d.label}</button>
+  `).join('');
+}
+
+function selectUntilDie(sides) {
+  untilDie = sides;
+  buildDieSelector();
+}
+
+function changeLimit(delta) {
+  untilLimit = Math.max(1, Math.min(20, untilLimit + delta));
+  document.getElementById('limitVal').textContent = untilLimit;
+}
+
+function changeThreshold(delta) {
+  untilThreshold = Math.max(2, Math.min(untilDie, untilThreshold + delta));
+  document.getElementById('thresholdVal').textContent = untilThreshold;
+}
+
+function toggleAdvantage() {
+  untilAdvantage = document.getElementById('advantageToggle').checked;
+  document.getElementById('advRow').classList.toggle('on', untilAdvantage);
+  document.getElementById('runUntilBtn').textContent =
+    untilAdvantage ? 'ROLL UNTIL FAIL (ADV)' : 'ROLL UNTIL FAIL';
+}
+
+function addUntilFailTotal(total, sides, rollCount, advantage) {
+  const id = ++rollIdCounter;
+  const label = `Until Fail · d${sides} · ${rollCount} rolls${advantage ? ' · Adv' : ''}`;
+  rolls.push({ id, sides: null, value: total, timestamp: Date.now(), label });
+  updateTotal(true);
+  renderLog();
+  // Mark button as added
+  const addBtn = document.getElementById('addTotalBtn');
+  if (addBtn) {
+    addBtn.textContent = '✓ ADDED TO TOTAL';
+    addBtn.classList.add('added');
+  }
+}
+
+function runUntilFail() {
+  const btn = document.getElementById('runUntilBtn');
+  const resultDiv = document.getElementById('untilResult');
+  btn.disabled = true;
+
+  resultDiv.innerHTML = `<div class="rolling-indicator">Rolling<span class="rolling-dots">...</span></div>`;
+
+  setTimeout(() => {
+    const sides = untilDie;
+    const threshold = untilThreshold;
+    const limit = untilLimit;
+    const advantage = untilAdvantage;
+
+    const sequence = [];
+    let failCount = 0;
+    let total = 0;
+    let rollCount = 0;
+    const MAX_ROLLS = 10000;
+
+    while (failCount < limit && rollCount < MAX_ROLLS) {
+      let val, discarded = null;
+      if (advantage) {
+        const a = roll(sides);
+        const b = roll(sides);
+        val = Math.max(a, b);
+        discarded = Math.min(a, b);
+      } else {
+        val = roll(sides);
+      }
+      rollCount++;
+      total += val;
+      const isFail = val < threshold;
+      sequence.push({ val, isFail, discarded });
+      if (isFail) failCount++;
+    }
+
+    const chips = sequence.map(r => {
+      const discardedHtml = advantage
+        ? `<span style="font-size:9px;opacity:0.45;margin-left:2px;">↓${r.discarded}</span>`
+        : '';
+      return `<span class="roll-chip ${r.isFail ? 'fail-chip' : ''}">${r.val}${discardedHtml}</span>`;
+    }).join('');
+
+    const advLine = advantage
+      ? `<div class="result-stat">
+          <span class="result-stat-label">Mode</span>
+          <span class="result-stat-val" style="font-size:16px;">Advantage <span class="adv-badge">2-keep-high</span></span>
+        </div>` : '';
+
+    resultDiv.innerHTML = `<div class="result-card">
+      <div class="result-stat">
+        <span class="result-stat-label">Combined Total</span>
+        <span class="result-stat-val big">${total}</span>
+      </div>
+      <div class="result-stat">
+        <span class="result-stat-label">Times Rolled</span>
+        <span class="result-stat-val">${rollCount}</span>
+      </div>
+      <div class="result-stat">
+        <span class="result-stat-label">Die Used</span>
+        <span class="result-stat-val">d${sides}</span>
+      </div>
+      ${advLine}
+      <div class="result-stat">
+        <span class="result-stat-label">Fail Limit Reached</span>
+        <span class="result-stat-val">${failCount}×</span>
+      </div>
+      ${sequence.length <= 200 ? `<div class="roll-seq">
+        <div class="roll-seq-title">Roll Sequence (red = fail${advantage ? ' · small = discarded' : ''})</div>
+        <div class="roll-seq-items">${chips}</div>
+      </div>` : `<div class="roll-seq"><div class="roll-seq-title">${rollCount} rolls total (sequence hidden for large runs)</div></div>`}
+      <button class="add-to-total-btn" id="addTotalBtn"
+        onclick="addUntilFailTotal(${total}, ${sides}, ${rollCount}, ${advantage})">
+        ＋ ADD ${total} TO RUNNING TOTAL
+      </button>
+    </div>`;
+
+    btn.disabled = false;
+  }, 40);
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', ['roll','log','until'][i] === name);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+}
+
+// Init
+buildDiceGrid();
+buildDieSelector();
+</script>
+</body>
+</html>
