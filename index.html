@@ -84,14 +84,24 @@
   .counters-bar {
     flex-shrink: 0;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     background: #131009;
     border-bottom: 1px solid var(--border);
-    padding: 7px 14px;
+    padding: 10px 14px 8px;
     gap: 8px;
   }
+  .counters-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toggles-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
   .counter-widget {
-    flex: 1; display: flex; align-items: center; gap: 7px; min-width: 0;
+    flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0;
   }
   .counter-label {
     font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.1em;
@@ -99,11 +109,11 @@
   }
   .counter-label.robot-label { color: var(--robot); }
   .counter-label.treasure-label { color: var(--gold); }
-  .counter-controls { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .counter-controls { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
   .counter-btn {
-    width: 24px; height: 24px;
+    width: 30px; height: 30px;
     background: var(--surface3); border: 1px solid var(--border);
-    border-radius: 6px; font-size: 17px; cursor: pointer;
+    border-radius: 7px; font-size: 20px; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: all 0.15s; user-select: none; line-height: 1;
     padding-bottom: 1px; flex-shrink: 0;
@@ -113,15 +123,15 @@
   .counter-btn.treasure-btn { color: var(--gold-light); }
   .counter-btn.treasure-btn:active { background: var(--gold-dim); border-color: var(--gold); }
   .counter-val {
-    font-family: 'Cinzel', serif; font-size: 20px; font-weight: 700;
-    min-width: 30px; text-align: center; line-height: 1; transition: transform 0.15s;
+    font-family: 'Cinzel', serif; font-size: 32px; font-weight: 700;
+    min-width: 46px; text-align: center; line-height: 1; transition: transform 0.15s;
   }
-  .counter-val.robot-val { color: var(--robot); text-shadow: 0 0 10px rgba(122,174,232,0.5); }
-  .counter-val.treasure-val { color: var(--gold-light); text-shadow: 0 0 10px rgba(232,184,75,0.5); }
-  .counter-val.bump { transform: scale(1.28); }
-  .counter-divider { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
+  .counter-val.robot-val { color: var(--robot); text-shadow: 0 0 14px rgba(122,174,232,0.6); }
+  .counter-val.treasure-val { color: var(--gold-light); text-shadow: 0 0 14px rgba(232,184,75,0.6); }
+  .counter-val.bump { transform: scale(1.22); }
+  .counter-divider { width: 1px; height: 40px; background: var(--border); flex-shrink: 0; }
   .counter-reset {
-    width: 26px; height: 26px; background: transparent;
+    width: 28px; height: 26px; background: transparent;
     border: 1px solid var(--border); border-radius: 6px;
     color: var(--text-muted); font-size: 14px; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
@@ -129,7 +139,7 @@
   }
   .counter-reset:active { border-color: var(--red); color: var(--red-light); }
   .double-toggle {
-    padding: 0 9px; height: 26px; background: transparent;
+    padding: 0 10px; height: 26px; background: transparent;
     border: 1px solid var(--border); border-radius: 6px;
     color: var(--text-muted); font-family: 'Cinzel', serif;
     font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
@@ -140,6 +150,19 @@
     background: rgba(255,159,28,0.13); border-color: var(--amber);
     color: var(--amber); text-shadow: 0 0 8px rgba(255,159,28,0.5);
     box-shadow: 0 0 10px rgba(255,159,28,0.15);
+  }
+  .adv-toggle {
+    padding: 0 10px; height: 26px; background: transparent;
+    border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text-muted); font-family: 'Cinzel', serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+    cursor: pointer; transition: all 0.18s; user-select: none; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .adv-toggle.on {
+    background: var(--robot-dim); border-color: var(--robot);
+    color: var(--robot); text-shadow: 0 0 8px rgba(122,174,232,0.5);
+    box-shadow: 0 0 10px rgba(122,174,232,0.15);
   }
 
   /* TABS */
@@ -218,9 +241,16 @@
   .clear-btn {
     background: transparent; border: 1px solid var(--border); border-radius: 8px;
     color: var(--text-dim); font-family: 'Cinzel', serif; font-size: 10px;
-    letter-spacing: 0.1em; padding: 6px 12px; cursor: pointer; transition: all 0.15s; align-self: flex-end;
+    letter-spacing: 0.1em; padding: 6px 12px; cursor: pointer; transition: all 0.15s;
   }
   .clear-btn:active { border-color: var(--red); color: var(--red-light); }
+  .log-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .spend-btn {
+    background: transparent; border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-dim); font-family: 'Cinzel', serif; font-size: 10px;
+    letter-spacing: 0.1em; padding: 6px 12px; cursor: pointer; transition: all 0.15s;
+  }
+  .spend-btn:active { border-color: var(--green); color: var(--green); }
 
   /* UNTIL FAIL */
   .card { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
@@ -260,6 +290,10 @@
   }
   .run-btn:active { transform: scale(0.97); box-shadow: 0 0 30px rgba(201,146,42,0.4); }
   .run-btn:disabled { opacity: 0.4; cursor: default; }
+  /* stop-at-100 row reuses advantage-row styles; just override the .on accent */
+  .stop-row.on { border-color: var(--green) !important; background: rgba(39,174,96,0.08) !important; }
+  .stop-row.on .toggle-wrap input:checked + .toggle-track { background: rgba(39,174,96,0.35); border-color: var(--green); }
+  .stop-row.on .toggle-wrap input:checked + .toggle-track::after { background: var(--green); box-shadow: 0 0 8px rgba(39,174,96,0.5); }
   .advantage-row {
     display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
     padding: 12px 14px; background: var(--surface3); border: 1px solid var(--border);
@@ -379,25 +413,30 @@
 
 <!-- TOKEN COUNTERS BAR -->
 <div class="counters-bar">
-  <div class="counter-widget">
-    <span class="counter-label robot-label">&#9881; Robots</span>
-    <div class="counter-controls">
-      <button class="counter-btn robot-btn" onclick="adjustCounter('robots',-1)">&#8722;</button>
-      <div class="counter-val robot-val" id="robotsVal">0</div>
-      <button class="counter-btn robot-btn" onclick="adjustCounter('robots',1)">+</button>
+  <div class="counters-row">
+    <div class="counter-widget">
+      <span class="counter-label robot-label">&#9881; Robots</span>
+      <div class="counter-controls">
+        <button class="counter-btn robot-btn" onclick="adjustCounter('robots',-1)">&#8722;</button>
+        <div class="counter-val robot-val" id="robotsVal">0</div>
+        <button class="counter-btn robot-btn" onclick="adjustCounter('robots',1)">+</button>
+      </div>
+    </div>
+    <div class="counter-divider"></div>
+    <div class="counter-widget">
+      <span class="counter-label treasure-label">&#9672; Treasures</span>
+      <div class="counter-controls">
+        <button class="counter-btn treasure-btn" onclick="adjustCounter('treasures',-1)">&#8722;</button>
+        <div class="counter-val treasure-val" id="treasuresVal">0</div>
+        <button class="counter-btn treasure-btn" onclick="adjustCounter('treasures',1)">+</button>
+      </div>
     </div>
   </div>
-  <div class="counter-divider"></div>
-  <div class="counter-widget">
-    <span class="counter-label treasure-label">&#9672; Treasures</span>
-    <div class="counter-controls">
-      <button class="counter-btn treasure-btn" onclick="adjustCounter('treasures',-1)">&#8722;</button>
-      <div class="counter-val treasure-val" id="treasuresVal">0</div>
-      <button class="counter-btn treasure-btn" onclick="adjustCounter('treasures',1)">+</button>
-    </div>
+  <div class="toggles-row">
+    <button class="counter-reset" onclick="resetCounters()" title="Reset both counters to 0">&#8635;</button>
+    <button class="double-toggle" id="doubleToggleBtn" onclick="toggleDoubling()" title="Double all token yields">&#215;2</button>
+    <button class="adv-toggle" id="advToggleBtn" onclick="toggleAdvantage()" title="Roll with advantage (2-keep-high)">ADV</button>
   </div>
-  <button class="counter-reset" onclick="resetCounters()" title="Reset both counters to 0">&#8635;</button>
-  <button class="double-toggle" id="doubleToggleBtn" onclick="toggleDoubling()" title="Double all token yields">&#215;2</button>
 </div>
 
 <div class="tabs">
@@ -416,7 +455,10 @@
 
   <!-- LOG PANEL -->
   <div class="panel" id="panel-log">
-    <button class="clear-btn" onclick="clearAll()">CLEAR ALL</button>
+    <div class="log-actions">
+      <button class="spend-btn" onclick="spendHundred()">&#8722;100 PUZZLEBOX</button>
+      <button class="clear-btn" onclick="clearAll()">CLEAR ALL</button>
+    </div>
     <div class="section-title">Individual Rolls</div>
     <div class="roll-log" id="rollLog">
       <div class="empty-state">No rolls yet — head to Roll Dice!</div>
@@ -436,7 +478,7 @@
         </div>
         <div class="num-control">
           <button class="num-btn" onclick="changeLimit(-1)">&#8722;</button>
-          <div class="num-val" id="limitVal">4</div>
+          <div class="num-val" id="limitVal">1</div>
           <button class="num-btn" onclick="changeLimit(1)">+</button>
         </div>
       </div>
@@ -453,13 +495,13 @@
         </div>
       </div>
 
-      <div class="advantage-row" id="advRow">
+      <div class="advantage-row stop-row" id="stopRow">
         <div class="advantage-label">
-          Roll with Advantage
-          <span>Each roll is made twice — only the higher result counts</span>
+          Stop at Combined 100
+          <span>After a successful roll brings running total + this run to 100 or more, stop rolling</span>
         </div>
         <label class="toggle-wrap">
-          <input type="checkbox" id="advantageToggle" onchange="toggleAdvantage()">
+          <input type="checkbox" id="stopToggle" onchange="toggleStopAt100()">
           <div class="toggle-track"></div>
         </label>
       </div>
@@ -489,10 +531,9 @@ const DICE = [
 
 let rolls        = [];
 let rollIdCounter = 0;
-let untilDie      = 6;
-let untilLimit    = 4;
+let untilDie      = 20;
+let untilLimit    = 1;
 let untilThreshold = 6;
-let untilAdvantage = false;
 
 // Global token counters
 let robots    = 0;
@@ -501,7 +542,11 @@ let treasures = 0;
 let pendingRobots    = 0;
 let pendingTreasures = 0;
 // Doubling toggle — when on, every token-generating roll yields ×2
-let doubling = false;
+let doubling  = false;
+// Advantage toggle — when on, every roll is 2-keep-high
+let advantage = false;
+// Stop-at-100 toggle — when on, stop rolling after a success that brings combined total to 100+
+let stopAt100 = false;
 
 // ── TOKEN LOGIC ──────────────────────────────────────────────────
 // Fixed Vexing Puzzlebox thresholds:
@@ -565,7 +610,13 @@ function roll(sides) {
 }
 
 function addRoll(sides) {
-  const value = roll(sides);
+  let value;
+  if (advantage) {
+    const a = roll(sides), b = roll(sides);
+    value = Math.max(a, b);
+  } else {
+    value = roll(sides);
+  }
   const id    = ++rollIdCounter;
   const tok      = getTokensForValue(value);
   const mult     = doubling ? 2 : 1;
@@ -692,10 +743,24 @@ function changeThreshold(delta) {
 }
 
 function toggleAdvantage() {
-  untilAdvantage = document.getElementById('advantageToggle').checked;
-  document.getElementById('advRow').classList.toggle('on', untilAdvantage);
+  advantage = !advantage;
+  const btn = document.getElementById('advToggleBtn');
+  btn.classList.toggle('on', advantage);
   document.getElementById('runUntilBtn').textContent =
-    untilAdvantage ? 'ROLL UNTIL FAIL (ADV)' : 'ROLL UNTIL FAIL';
+    advantage ? 'ROLL UNTIL FAIL (ADV)' : 'ROLL UNTIL FAIL';
+}
+
+function toggleStopAt100() {
+  stopAt100 = document.getElementById('stopToggle').checked;
+  document.getElementById('stopRow').classList.toggle('on', stopAt100);
+}
+
+function spendHundred() {
+  const id = ++rollIdCounter;
+  rolls.push({ id, sides: null, value: -100, timestamp: Date.now(),
+    label: '\u2212100 \u00b7 Puzzlebox Spent' });
+  updateTotal(false);
+  renderLog();
 }
 
 // ── UNTIL FAIL ────────────────────────────────────────────────────
@@ -724,11 +789,12 @@ function runUntilFail() {
     const sides     = untilDie;
     const threshold = untilThreshold;
     const limit     = untilLimit;
-    const advantage = untilAdvantage;
 
     const sequence = [];
     let failCount = 0, total = 0, rollCount = 0;
+    let stopReason = 'fail_limit';
     const MAX_ROLLS = 10000;
+    const baseTotal = getTotal(); // running total before this run
 
     while (failCount < limit && rollCount < MAX_ROLLS) {
       let val, discarded = null;
@@ -743,7 +809,12 @@ function runUntilFail() {
       const isFail = val < threshold;
       const tok    = getTokensForValue(val);
       sequence.push({ val, isFail, discarded, tok });
-      if (isFail) failCount++;
+      if (isFail) {
+        failCount++;
+      } else if (stopAt100 && (baseTotal + total) >= 100) {
+        stopReason = 'reached_100';
+        break;
+      }
     }
 
     // Tally tokens for this entire run
@@ -769,6 +840,13 @@ function runUntilFail() {
       + '<span class="result-stat-label">Mode</span>'
       + '<span class="result-stat-val" style="font-size:16px;">Advantage <span class="adv-badge">2-keep-high</span></span>'
       + '</div>' : '';
+
+    const stopReasonLine = '<div class="result-stat">'
+      + '<span class="result-stat-label">Stopped By</span>'
+      + (stopReason === 'reached_100'
+        ? '<span class="result-stat-val" style="font-size:16px;color:var(--green);">Total \u2265 100 \u2713</span>'
+        : '<span class="result-stat-val" style="font-size:16px;">Fail Limit ' + failCount + '\u00d7</span>')
+      + '</div>';
 
     const doubleBadge = doubling ? ' <span class="double-badge">&#215;2 ACTIVE</span>' : '';
     const robotBase   = doubling ? '<div class="token-yield-base">' + runRobotsBase + ' base &#215;2</div>' : '';
@@ -798,7 +876,7 @@ function runUntilFail() {
       + '<div class="result-stat"><span class="result-stat-label">Times Rolled</span><span class="result-stat-val">' + rollCount + '</span></div>'
       + '<div class="result-stat"><span class="result-stat-label">Die Used</span><span class="result-stat-val">d' + sides + '</span></div>'
       + advLine
-      + '<div class="result-stat"><span class="result-stat-label">Fail Limit Reached</span><span class="result-stat-val">' + failCount + '\u00d7</span></div>'
+      + stopReasonLine
       + tokenYield
       + seqSection
       + '<button class="add-to-total-btn" id="addTotalBtn" onclick="addUntilFailTotal(' + total + ',' + sides + ',' + rollCount + ',' + advantage + ')">'
